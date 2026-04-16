@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEURAL FORGE - Machine Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚙️ NEURAL FORGE: MACHINE BUILDER 🧠</h1>
+            <p class="subtitle">Build a machine brain. Reach 1000 score. Win.</p>
+        </div>
+
+        <!-- Main 3-Column Layout -->
+        <div class="main-layout">
+<!-- LEFT COLUMN: Stats -->
+<div class="left-panel">
+    <div class="panel-title">📊 STATISTICS</div>
+    <div class="stats-panel">
+        
+        <!-- SCORE - Most Important (Big, Glowing, Golden) -->
+        <div class="stat-card score-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-info">
+                <div class="stat-label">SCORE GOAL</div>
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-max">TARGET: 1000</div>
+            </div>
+        </div>
+        
+        <!-- RESOURCES - Second Most Important (Big, Bright Cyan) -->
+        <div class="stat-card resource-card">
+            <div class="stat-icon">🔩</div>
+            <div class="stat-info">
+                <div class="stat-label">RESOURCES</div>
+                <div class="stat-value" id="resources">100</div>
+                <div class="stat-max">to spend on machines</div>
+            </div>
+        </div>
+        
+        <!-- LOOP - Important for progress -->
+        <div class="stat-card loop-card">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-info">
+                <div class="stat-label">CURRENT LOOP</div>
+                <div class="stat-value" id="loopNum">1</div>
+                <div class="stat-max">max 15 loops</div>
+            </div>
+        </div>
+        
+        <!-- Intelligence - Normal -->
+        <div class="stat-card normal-card">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-info">
+                <div class="stat-label">INTELLIGENCE</div>
+                <div class="stat-value" id="intelligence">0</div>
+                <div class="stat-max">% learning progress</div>
+            </div>
+        </div>
+        
+        <!-- Machines Placed - Normal -->
+        <div class="stat-card normal-card">
+            <div class="stat-icon">⚙️</div>
+            <div class="stat-info">
+                <div class="stat-label">MACHINES</div>
+                <div class="stat-value" id="activeNeurons">0</div>
+                <div class="stat-max">placed on grid</div>
+            </div>
+        </div>
+        
+        <!-- Connections - Normal -->
+        <div class="stat-card normal-card">
+            <div class="stat-icon">🔗</div>
+            <div class="stat-info">
+                <div class="stat-label">CONNECTIONS</div>
+                <div class="stat-value" id="connections">0</div>
+                <div class="stat-max">between machines</div>
+            </div>
+        </div>
+        
+        <!-- Learning Rate - Normal -->
+        <div class="stat-card normal-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-info">
+                <div class="stat-label">LEARNING RATE</div>
+                <div class="stat-value" id="learningRate">0.75</div>
+                <div class="stat-max">faster = smarter</div>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-label">LOOP PROGRESS</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-percent" id="loopProgress">0%</div>
+        </div>
+    </div>
+</div>
+
+            <!-- MIDDLE COLUMN: Game Grid -->
+            <div class="game-panel">
+                <div class="panel-title">🎮 FACTORY FLOOR</div>
+                <canvas id="gameCanvas" width="700" height="500"></canvas>
+                <div class="selected-indicator">
+                    Selected: <span id="selectedMachine" class="selected-name">None</span>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Controls -->
+            <div class="right-panel">
+                <div class="panel-title">🎮 CONTROLS</div>
+                <div class="controls-panel">
+                    <button id="helpBtn" class="btn btn-help">❓ HELP</button>
+                    <button id="evolveBtn" class="btn btn-primary">🔄 EVOLVE LOOP</button>
+                    <button id="autoBtn" class="btn btn-secondary">🤖 AUTO-BUILD</button>
+                    <button id="resetBtn" class="btn btn-danger">🗑️ RESET</button>
+                </div>
+                
+                <div class="tips-panel">
+                    <div class="panel-title-small">💡 QUICK TIP</div>
+                    <div class="tip-text" id="tipText">
+                        Click HELP to learn how to play!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MACHINE LIBRARY (Full width, below grid) -->
+        <div class="library-section">
+            <div class="panel-title">🔧 MACHINE LIBRARY</div>
+            <div class="machines">
+                <div class="machine-card" data-type="sensor">
+                    <div class="machine-icon">📡</div>
+                    <div class="machine-name">SENSOR</div>
+                    <div class="machine-cost">15 🔩</div>
+                    <div class="machine-desc">Starts the signal</div>
+                </div>
+                <div class="machine-card" data-type="processor">
+                    <div class="machine-icon">🧠</div>
+                    <div class="machine-name">PROCESSOR</div>
+                    <div class="machine-cost">25 🔩</div>
+                    <div class="machine-desc">Thinks & calculates</div>
+                </div>
+                <div class="machine-card" data-type="memory">
+                    <div class="machine-icon">💾</div>
+                    <div class="machine-name">MEMORY</div>
+                    <div class="machine-cost">30 🔩</div>
+                    <div class="machine-desc">Remembers past</div>
+                </div>
+                <div class="machine-card" data-type="actuator">
+                    <div class="machine-icon">🦾</div>
+                    <div class="machine-name">ACTUATOR</div>
+                    <div class="machine-cost">20 🔩</div>
+                    <div class="machine-desc">PRODUCES SCORE!</div>
+                </div>
+                <div class="machine-card" data-type="connector">
+                    <div class="machine-icon">🔗</div>
+                    <div class="machine-name">CONNECTOR</div>
+                    <div class="machine-cost">10 🔩</div>
+                    <div class="machine-desc">Links machines</div>
+                </div>
+                <div class="machine-card" data-type="mutator">
+                    <div class="machine-icon">🧬</div>
+                    <div class="machine-name">MUTATOR</div>
+                    <div class="machine-cost">40 🔩</div>
+                    <div class="machine-desc">Evolves network</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEARNING LOG (Bottom) -->
+        <div class="log-section">
+            <div class="panel-title">📊 GAME LOG</div>
+            <div class="log-container" id="logMessages">
+                <div class="log-entry welcome">⚙️ Welcome to Neural Forge! Click HELP to learn</div>
+                <div class="log-entry welcome">🎯 Goal: Reach 1000 score within 15 loops</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HELP MODAL -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📖 HOW TO PLAY</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h3>🎯 WHAT IS THIS GAME?</h3>
+                    <p>Build a network of machines that learn over time. Each machine is like a brain cell. Connected together, they produce SCORE points.</p>
+                    <p><strong>Goal:</strong> Reach <strong class="gold">1000 SCORE</strong> within <strong>15 loops</strong>.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>🎮 QUICK START (60 SECONDS)</h3>
+                    <div class="step-guide">
+                        <div class="step">1️⃣ Click SENSOR machine below</div>
+                        <div class="step">2️⃣ Click on the empty grid to place it</div>
+                        <div class="step">3️⃣ Place another SENSOR</div>
+                        <div class="step">4️⃣ Place 2 PROCESSORS</div>
+                        <div class="step">5️⃣ Place 1 ACTUATOR</div>
+                        <div class="step">6️⃣ Click EVOLVE LOOP → Watch your score grow!</div>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>🔧 MACHINE ROLES</h3>
+                    <table class="machine-table">
+                        <tr><th>Machine</th><th>Role</th><th>Best For</th></tr>
+                        <tr><td>📡 SENSOR</td><td>Starts signal (like eyes)</td><td>Beginning of network</td></tr>
+                        <tr><td>🧠 PROCESSOR</td><td>Thinks (like brain)</td><td>Middle of network</td></tr>
+                        <tr><td>🦾 ACTUATOR</td><td><strong>PRODUCES SCORE!</strong></td><td>End of network</td></tr>
+                        <tr><td>💾 MEMORY</td><td>Remembers past loops</td><td>After 5+ machines</td></tr>
+                        <tr><td>🔗 CONNECTOR</td><td>Links far machines</td><td>When network grows</td></tr>
+                        <tr><td>🧬 MUTATOR</td><td>Evolves connections</td><td>Late game</td></tr>
+                    </table>
+                </div>
+
+                <div class="help-section">
+                    <h3>💡 WINNING FORMULA</h3>
+                    <div class="strategy-box">
+                        <p><strong>Loop 1-3:</strong> 2 SENSORS + 2 PROCESSORS + 1 ACTUATOR</p>
+                        <p><strong>Loop 4-7:</strong> Add 2 ACTUATORS + 1 MEMORY</p>
+                        <p><strong>Loop 8-12:</strong> Add CONNECTORS + MUTATOR</p>
+                        <p><strong>Loop 13-15:</strong> Keep adding ACTUATORS → WIN!</p>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>🕹️ CONTROLS</h3>
+                    <ul>
+                        <li><strong>Left Click</strong> - Place machine</li>
+                        <li><strong>Right Click</strong> - Remove machine</li>
+                        <li><strong>EVOLVE LOOP</strong> - End round, earn resources</li>
+                        <li><strong>AUTO-BUILD</strong> - AI places machines for you</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
