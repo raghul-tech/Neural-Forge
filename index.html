@@ -244,8 +244,82 @@
             </div>
         </div>
     </div>
+
+    <!-- WIN/LOSS POPUP MODALS -->
+<div id="winModal" class="game-result-modal">
+    <div class="result-card win">
+        <div class="result-icon">🏆✨</div>
+        <div class="result-title">VICTORY!</div>
+        <div class="result-stats">
+            <div class="result-stat-row highlight">
+                <span class="stat-label">FINAL SCORE</span>
+                <span class="stat-value" id="winScore">0</span>
+            </div>
+            <div class="result-stat-row">
+                <span class="stat-label">INTELLIGENCE</span>
+                <span class="stat-value" id="winIntelligence">0</span>
+                <span>%</span>
+            </div>
+            <div class="result-stat-row">
+                <span class="stat-label">LOOPS USED</span>
+                <span class="stat-value" id="winLoops">0</span>
+                <span>/15</span>
+            </div>
+            <div class="result-stat-row">
+                <span class="stat-label">MACHINES BUILT</span>
+                <span class="stat-value" id="winMachines">0</span>
+            </div>
+        </div>
+        <div class="result-message">
+            Your neural machine has evolved beyond expectations!<br>
+            The machine brain is now self-aware!
+        </div>
+        <div class="result-buttons">
+            <button class="result-btn result-btn-play" id="winPlayAgainBtn">🔄 PLAY AGAIN</button>
+            <button class="result-btn result-btn-close" id="winCloseBtn">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<div id="loseModal" class="game-result-modal">
+    <div class="result-card lose">
+        <div class="result-icon">💔⚙️</div>
+        <div class="result-title">GAME OVER</div>
+        <div class="result-stats">
+            <div class="result-stat-row">
+                <span class="stat-label">FINAL SCORE</span>
+                <span class="stat-value" id="loseScore">0</span>
+                <span>/1000</span>
+            </div>
+            <div class="result-stat-row">
+                <span class="stat-label">INTELLIGENCE</span>
+                <span class="stat-value" id="loseIntelligence">0</span>
+                <span>%</span>
+            </div>
+            <div class="result-stat-row">
+                <span class="stat-label">SHORT BY</span>
+                <span class="stat-value" id="loseShortBy">0</span>
+                <span>points</span>
+            </div>
+            <div class="result-stat-row">
+                <span class="stat-label">MACHINES BUILT</span>
+                <span class="stat-value" id="loseMachines">0</span>
+            </div>
+        </div>
+        <div class="result-message">
+            Your machine couldn't reach consciousness this time.<br>
+            Try a different strategy!
+        </div>
+        <div class="result-buttons">
+            <button class="result-btn result-btn-play" id="losePlayAgainBtn">🔄 TRY AGAIN</button>
+            <button class="result-btn result-btn-close" id="loseCloseBtn">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<canvas id="confettiCanvas" class="confetti-canvas"></canvas>
     
     <script src="neural-net.js"></script>
-   
+   <script src="game.js"></script>
 </body>
 </html>
