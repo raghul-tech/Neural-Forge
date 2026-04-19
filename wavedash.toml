@@ -1,0 +1,9 @@
+game_id = "j97bf3ajc4z8ta5gffp6n3m971854f4h"
+org_slug = "raghul-tech"
+game_slug = "neural-forge"
+branch_slug = "main"
+upload_dir = "."
+
+[custom]
+version = "1.0.0"
+entrypoint = "index.html"

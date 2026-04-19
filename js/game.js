@@ -60,6 +60,7 @@ class NeuralForge {
         this.addLog('⚙️ Welcome to Neural Forge! Click HELP to learn how to play', '#ffcc00');
         this.addLog('🎯 Goal: Reach 1000 score within 15 loops', '#00ffcc');
         this.addLog('🖱️ Drag anywhere on grid to move camera', '#888');
+        this.initWavedash();
     }
     
     checkSavedGameResult() {
@@ -390,7 +391,8 @@ class NeuralForge {
         } else if (this.currentLoop > this.maxLoops) {
             this.endGame();
         }
-        
+        this.submitScoreToWavedash(this.score);
+    this.updateWavedashProgress();
         this.saveGame();
     }
     
@@ -420,7 +422,7 @@ class NeuralForge {
         }
         
         this.addLog(`🏆 VICTORY! You reached ${this.score} / ${this.targetScore} score! 🏆`, '#ffcc00');
-        
+        this.submitWinToWavedash();
         this.saveGame();
     }
     
@@ -449,6 +451,7 @@ class NeuralForge {
         }
         
         this.addLog(`📢 Game Complete! Final Score: ${this.score} / ${this.targetScore}`, '#ffcc00');
+        this.submitLoseToWavedash();
         this.saveGame();
     }
     
@@ -853,6 +856,69 @@ class NeuralForge {
         this.draw();
         requestAnimationFrame(() => this.animate());
     }
+
+initWavedash() {
+    this.wavedashReady = false;
+    this.wavedashGameId = 'j97bf3ajc4z8ta5gffp6n3m971854f4h';
+    if (typeof Wavedash !== 'undefined') {
+        Wavedash.init({
+            gameId: this.wavedashGameId,
+            onReady: () => {
+                console.log('🎮 Wavedash ready!');
+                this.wavedashReady = true;
+                this.submitScoreToWavedash(this.score);
+            },
+            onError: (error) => {
+                console.log('Wavedash error:', error);
+            }
+        });
+    } else {
+        console.log('Wavedash SDK not loaded');
+    }
+}
+
+submitScoreToWavedash(score) {
+    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
+        const intScore = Math.floor(score);
+        Wavedash.submitScore(intScore);
+        console.log(`📊 Score submitted to Wavedash: ${intScore}`);
+    }
+}
+
+submitWinToWavedash() {
+    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
+        Wavedash.trackEvent('game_win', {
+            score: Math.floor(this.score),
+            loopsUsed: this.currentLoop - 1,
+            intelligence: Math.floor(this.intelligence),
+            machinesBuilt: this.machines.length
+        });
+        console.log('🏆 Win event tracked in Wavedash');
+    }
+}
+
+submitLoseToWavedash() {
+    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
+        Wavedash.trackEvent('game_lose', {
+            score: Math.floor(this.score),
+            shortBy: this.targetScore - this.score,
+            intelligence: Math.floor(this.intelligence),
+            machinesBuilt: this.machines.length
+        });
+        console.log('💔 Loss event tracked in Wavedash');
+    }
+}
+
+updateWavedashProgress() {
+    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
+        Wavedash.trackEvent('loop_complete', {
+            loop: this.currentLoop,
+            score: Math.floor(this.score),
+            resources: Math.floor(this.resources),
+            intelligence: Math.floor(this.intelligence)
+        });
+    }
+}
 }
 
 const game = new NeuralForge();
