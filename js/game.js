@@ -676,7 +676,7 @@ class NeuralForge {
         document.getElementById('connections').textContent = this.neuralNet.connections.length;
         document.getElementById('learningRate').textContent = this.neuralNet.learningRate.toFixed(2);
         
-        const progress = (this.currentLoop / this.maxLoops) * 100;
+        const progress = ((this.currentLoop -1) / this.maxLoops) * 100;
         document.getElementById('progressFill').style.width = progress + '%';
         document.getElementById('loopProgress').textContent = Math.floor(progress);
     }
