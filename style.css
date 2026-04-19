@@ -761,17 +761,69 @@ body {
     
     .controls-panel {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 10px;
     }
     
     .btn {
         flex: 1;
+        padding: 12px 16px;
+        font-size: 0.9em;
     }
     
     .machine-card {
-        min-width: 80px;
+        min-width: 70px;
         max-width: none;
+        padding: 10px;
+    }
+    
+    .machine-icon {
+        font-size: 1.6em;
+    }
+    
+    .machine-name {
+        font-size: 0.8em;
+    }
+    
+    .machine-cost {
+        font-size: 0.75em;
+    }
+    
+    .machine-desc {
+        font-size: 0.7em;
+    }
+}
+
+@media (max-width: 750px) {
+    .controls-panel {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 10px 14px;
+        font-size: 0.85em;
+    }
+    
+    .machine-card {
+        min-width: 65px;
+        padding: 8px;
+    }
+    
+    .machine-icon {
+        font-size: 1.5em;
+    }
+    
+    .machine-name {
+        font-size: 0.75em;
+    }
+    
+    .machine-cost {
+        font-size: 0.7em;
+    }
+    
+    .machine-desc {
+        font-size: 0.65em;
     }
 }
 
@@ -806,5 +858,175 @@ body {
     
     .machine-icon {
         font-size: 1.8em;
+    }
+    
+    /* Mobile Game Result Modals */
+    .game-result-modal {
+        padding: 20px;
+    }
+    
+    .result-card {
+        padding: 25px 20px;
+        max-width: 95%;
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    .result-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+    }
+    
+    .result-title {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+    
+    .result-stats {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .result-stat-row {
+        padding: 6px 0;
+        font-size: 1em;
+    }
+    
+    .result-stat-row .stat-value {
+        font-size: 1.1em;
+    }
+    
+    .result-stat-row.highlight .stat-value {
+        font-size: 1.3em;
+    }
+    
+    .result-message {
+        font-size: 0.95em;
+        margin: 15px 0;
+    }
+    
+    .result-buttons {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 15px;
+    }
+    
+    .result-btn {
+        padding: 15px 20px;
+        font-size: 1.1em;
+        width: 100%;
+        max-width: 250px;
+        margin: 0 auto;
+    }
+    
+    /* Mobile Canvas and Grid */
+    .game-panel {
+        padding: 0 5px;
+    }
+    
+    #gameCanvas {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        touch-action: manipulation;
+    }
+    
+    .selected-indicator {
+        font-size: 0.8em;
+        margin-top: 8px;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+    .game-result-modal {
+        padding: 10px;
+    }
+    
+    .result-card {
+        padding: 20px 25px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .result-icon {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+    
+    .result-title {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+    }
+    
+    .result-stats {
+        padding: 12px;
+        margin: 10px 0;
+    }
+    
+    .result-stat-row {
+        padding: 4px 0;
+        font-size: 0.9em;
+    }
+    
+    .result-message {
+        font-size: 0.85em;
+        margin: 10px 0;
+    }
+    
+    .result-buttons {
+        flex-direction: row;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .result-btn {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        width: auto;
+        max-width: none;
+        margin: 0;
+    }
+}
+
+/* Very small landscape screens */
+@media (max-height: 450px) and (orientation: landscape) {
+    .result-card {
+        padding: 15px 20px;
+        max-width: 400px;
+    }
+    
+    .result-icon {
+        font-size: 40px;
+    }
+    
+    .result-title {
+        font-size: 1.5em;
+    }
+    
+    .result-stats {
+        padding: 8px;
+        margin: 8px 0;
+    }
+    
+    .result-stat-row {
+        padding: 3px 0;
+        font-size: 0.8em;
+    }
+    
+    .result-message {
+        font-size: 0.8em;
+        margin: 8px 0;
+    }
+    
+    .result-buttons {
+        gap: 8px;
+    }
+    
+    .result-btn {
+        padding: 8px 12px;
+        font-size: 0.85em;
     }
 }

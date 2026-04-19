@@ -2,7 +2,7 @@
 
 [![Gamedev.js Jam 2026](https://img.shields.io/badge/Gamedev.js%20Jam-2026-00ffcc)](https://itch.io/jam/gamedevjs-2026)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Wavedash](https://img.shields.io/badge/Deployed%20on-Wavedash-00ffcc)](https://wavedash.com/game/neural-forge)
+[![Wavedash](https://img.shields.io/badge/Deployed%20on-Wavedash-00ffcc)](https://wavedash.com/games/neural-forge)
 [![Open Source](https://img.shields.io/badge/Open%20Source-GitHub-purple)](https://github.com/raghul-tech/neural-forge)
 
 **Build a living machine brain that learns over time. Reach 1000 points within 15 loops to win!**
@@ -28,7 +28,17 @@
 
 ---
 
-## 🔧 MACHINE TYPES
+## SCREENSHOTS
+
+### Game Layout
+![Game Layout](img/img1.png)
+
+### Game Play Area
+![Game Play Area](img/img2.png)
+
+---
+
+## MACHINE TYPES
 
 | Machine | Icon | Cost | Role | Best Placement |
 |---------|------|------|------|----------------|
@@ -132,7 +142,7 @@ Neural-Forge/
 
 ---
 
-## 🎨 GAME FEATURES
+## GAME FEATURES
 
 | Feature | Description |
 |---------|-------------|
@@ -231,7 +241,7 @@ You are free to:
 | **Play Online** | [GitHub Pages](https://raghul-tech.github.io/neural-forge) |
 | **Itch.io Entry** | [raghul-tech.itch.io](https://raghul-tech.itch.io) |
 | **GitHub Repo** | [github.com/raghul-tech/neural-forge](https://github.com/raghul-tech/neural-forge) |
-| **Wavedash** | [wavedash.com/game/neural-forge](https://wavedash.com/game/neural-forge) |
+| **Wavedash** | [wavedash.com/games/neural-forge](https://wavedash.com/games/neural-forge) |
 
 ---
 

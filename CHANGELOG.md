@@ -40,7 +40,7 @@
 - **Play**: https://raghul-tech.github.io/Neural-Forge
 - **GitHub**: https://github.com/raghul-tech/Neural-Forge
 - **Itch.io**: https://raghul-tech.itch.io
-- **Wavedash**: https://wavedash.com/game/neural-forge
+- **Wavedash**: https://wavedash.com/games/neural-forge
 
 ### 📧 Contact
 - GitHub: [@raghul-tech](https://github.com/raghul-tech)
