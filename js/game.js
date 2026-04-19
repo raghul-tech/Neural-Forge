@@ -11,13 +11,15 @@ class NeuralForge {
         this.intelligence = 0;
         this.selectedMachine = null;
         this.gameActive = true;
-        
+    
+        this.gameResult = null;
+        this.gameResultData = null;
+
         this.worldWidth = 35;
         this.worldHeight = 25;
         this.cellSize = 45;
         
         this.camera = { x: 0, y: 0 };
-        
         this.isPanning = false;
         this.panStart = { x: 0, y: 0 };
         this.cameraStart = { x: 0, y: 0 };
@@ -29,10 +31,6 @@ class NeuralForge {
         this.machines = [];
         this.loopHistory = [];
         
-        this.machineCosts = {
-            sensor: 15, processor: 25, memory: 30,
-            actuator: 20, connector: 10, mutator: 40
-        };
         this.machineCosts = {
             sensor: 15, processor: 25, memory: 30,
             actuator: 20, connector: 10, mutator: 40
@@ -53,7 +51,10 @@ class NeuralForge {
         this.centerCamera();
         this.setupEvents();
         this.setupResultModals();
+        
         this.loadGame();
+        this.checkSavedGameResult(); 
+        
         this.animate();
         
         this.addLog('⚙️ Welcome to Neural Forge! Click HELP to learn how to play', '#ffcc00');
@@ -61,34 +62,95 @@ class NeuralForge {
         this.addLog('🖱️ Drag anywhere on grid to move camera', '#888');
     }
     
+    checkSavedGameResult() {
+        const savedResult = localStorage.getItem('neural_forge_result');
+        const savedResultData = localStorage.getItem('neural_forge_result_data');
+        
+        if (savedResult && savedResultData) {
+            this.gameResult = savedResult;
+            this.gameResultData = JSON.parse(savedResultData);
+            this.gameActive = false;
+            if (this.gameResult === 'win' ) {
+                this.showWinPopupFromSave();
+            } else if (this.gameResult === 'lose') {
+                this.showLosePopupFromSave();
+            }
+        }
+    }
+    
+    showWinPopupFromSave() {
+        if (this.gameResultData) {
+            document.getElementById('winScore').textContent = this.gameResultData.score;
+            document.getElementById('winIntelligence').textContent = this.gameResultData.intelligence;
+            document.getElementById('winLoops').textContent = this.gameResultData.loopsUsed;
+            document.getElementById('winMachines').textContent = this.gameResultData.machinesCount;
+        }
+        document.getElementById('winModal').style.display = 'flex';
+        this.startConfetti();
+        if (typeof soundManager !== 'undefined') {
+            soundManager.playWinSound();
+        }
+    }
+    
+    showLosePopupFromSave() {
+        if (this.gameResultData) {
+            document.getElementById('loseScore').textContent = this.gameResultData.score;
+            document.getElementById('loseIntelligence').textContent = this.gameResultData.intelligence;
+            document.getElementById('loseShortBy').textContent = this.gameResultData.shortBy;
+            document.getElementById('loseMachines').textContent = this.gameResultData.machinesCount;
+        }
+        document.getElementById('loseModal').style.display = 'flex';
+        if (typeof soundManager !== 'undefined') {
+            soundManager.playLoseSound();
+        }
+    }
+    
+    saveGameResult(result, data) {
+        this.gameResult = result;
+        this.gameResultData = data;
+        localStorage.setItem('neural_forge_result', result);
+        localStorage.setItem('neural_forge_result_data', JSON.stringify(data));
+    }
+
+    clearGameResult() {
+        this.gameResult = null;
+        this.gameResultData = null;
+        localStorage.removeItem('neural_forge_result');
+        localStorage.removeItem('neural_forge_result_data');
+    }
+    
     setupResultModals() {
         document.getElementById('winPlayAgainBtn').onclick = () => {
             document.getElementById('winModal').style.display = 'none';
             this.stopConfetti();
+            this.clearGameResult();
             this.resetGame();
         };
         document.getElementById('winCloseBtn').onclick = () => {
             document.getElementById('winModal').style.display = 'none';
             this.stopConfetti();
+            this.addLog('Press PLAY AGAIN to start a new game', '#ffcc00');
         };
-        
         document.getElementById('losePlayAgainBtn').onclick = () => {
             document.getElementById('loseModal').style.display = 'none';
+            this.clearGameResult();
             this.resetGame();
         };
+        
         document.getElementById('loseCloseBtn').onclick = () => {
             document.getElementById('loseModal').style.display = 'none';
+            this.addLog('Press TRY AGAIN to start a new game', '#ffcc00');
         };
         
         document.getElementById('winModal').onclick = (e) => {
             if (e.target === document.getElementById('winModal')) {
-                document.getElementById('winModal').style.display = 'none';
-                this.stopConfetti();
+                this.addLog('Press PLAY AGAIN to start a new game', '#ffcc00');
             }
         };
+        
         document.getElementById('loseModal').onclick = (e) => {
             if (e.target === document.getElementById('loseModal')) {
-                document.getElementById('loseModal').style.display = 'none';
+                this.addLog('Press TRY AGAIN to start a new game', '#ffcc00');
             }
         };
     }
@@ -112,6 +174,7 @@ class NeuralForge {
     
     setupEvents() {
         this.canvas.addEventListener('mousedown', (e) => {
+            //if (!this.gameActive) return;
             this.isPanning = true;
             this.panStart = { x: e.clientX, y: e.clientY };
             this.cameraStart = { x: this.camera.x, y: this.camera.y };
@@ -119,7 +182,8 @@ class NeuralForge {
         });
         
         window.addEventListener('mousemove', (e) => {
-            if (this.isPanning) {
+            //if (this.isPanning && this.gameActive) {
+            if(this.isPanning){
                 const dx = e.clientX - this.panStart.x;
                 const dy = e.clientY - this.panStart.y;
                 this.camera.x = this.cameraStart.x - dx;
@@ -135,16 +199,16 @@ class NeuralForge {
         });
         
         this.canvas.addEventListener('click', (e) => {
-            if (this.isPanning) return;
             if (!this.gameActive) return;
+            if (this.isPanning) return;
             const pos = this.getGridPosition(e);
             if (pos) this.placeMachine(pos.x, pos.y);
         });
         
         this.canvas.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            if (this.isPanning) return;
             if (!this.gameActive) return;
+            if (this.isPanning) return;
             const pos = this.getGridPosition(e);
             if (pos) this.removeMachine(pos.x, pos.y);
         });
@@ -153,15 +217,26 @@ class NeuralForge {
         
         document.querySelectorAll('.machine-card').forEach(card => {
             card.addEventListener('click', () => {
+                this.checkSavedGameResult();
                 if (!this.gameActive) return;
                 const type = card.dataset.type;
                 this.selectMachine(type, card);
             });
         });
         
-        document.getElementById('evolveBtn').addEventListener('click', () => this.evolveLoop());
+        document.getElementById('evolveBtn').addEventListener('click', () => {
+            this.checkSavedGameResult();
+            if (!this.gameActive) return;
+            this.evolveLoop();
+        });
+        
         document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
-        document.getElementById('autoBtn').addEventListener('click', () => this.autoBuild());
+        
+        document.getElementById('autoBtn').addEventListener('click', () => {
+            this.checkSavedGameResult();
+            if (!this.gameActive) return;
+            this.autoBuild();
+        });
         
         const helpModal = document.getElementById('helpModal');
         const helpBtn = document.getElementById('helpBtn');
@@ -322,32 +397,59 @@ class NeuralForge {
     winGame() {
         this.gameActive = false;
         
-        document.getElementById('winScore').textContent = Math.floor(this.score);
-        document.getElementById('winIntelligence').textContent = Math.floor(this.intelligence);
-        document.getElementById('winLoops').textContent = this.currentLoop - 1;
-        document.getElementById('winMachines').textContent = this.machines.length;
+        const winData = {
+            score: Math.floor(this.score),
+            intelligence: Math.floor(this.intelligence),
+            loopsUsed: this.currentLoop - 1,
+            machinesCount: this.machines.length
+        };
+        
+        this.saveGameResult('win', winData);
+        
+        document.getElementById('winScore').textContent = winData.score;
+        document.getElementById('winIntelligence').textContent = winData.intelligence;
+        document.getElementById('winLoops').textContent = winData.loopsUsed;
+        document.getElementById('winMachines').textContent = winData.machinesCount;
         
         document.getElementById('winModal').style.display = 'flex';
         
         this.startConfetti();
         
+        if (typeof soundManager !== 'undefined') {
+            soundManager.playWinSound();
+        }
+        
         this.addLog(`🏆 VICTORY! You reached ${this.score} / ${this.targetScore} score! 🏆`, '#ffcc00');
-        if (typeof soundManager !== 'undefined') soundManager.playWinSound();
+        
+        this.saveGame();
     }
     
     endGame() {
         this.gameActive = false;
         const shortBy = this.targetScore - this.score;
         
-        document.getElementById('loseScore').textContent = Math.floor(this.score);
-        document.getElementById('loseIntelligence').textContent = Math.floor(this.intelligence);
-        document.getElementById('loseShortBy').textContent = shortBy;
-        document.getElementById('loseMachines').textContent = this.machines.length;
+        const loseData = {
+            score: Math.floor(this.score),
+            intelligence: Math.floor(this.intelligence),
+            shortBy: shortBy,
+            machinesCount: this.machines.length
+        };
+        
+        this.saveGameResult('lose', loseData);
+        
+        document.getElementById('loseScore').textContent = loseData.score;
+        document.getElementById('loseIntelligence').textContent = loseData.intelligence;
+        document.getElementById('loseShortBy').textContent = loseData.shortBy;
+        document.getElementById('loseMachines').textContent = loseData.machinesCount;
         
         document.getElementById('loseModal').style.display = 'flex';
         
+        if (typeof soundManager !== 'undefined') {
+            soundManager.playLoseSound();
+        }
+        
         this.addLog(`📢 Game Complete! Final Score: ${this.score} / ${this.targetScore}`, '#ffcc00');
-        if (typeof soundManager !== 'undefined') soundManager.playWinSound();
+        this.saveGame();
     }
     
     startConfetti() {
@@ -409,8 +511,10 @@ class NeuralForge {
             cancelAnimationFrame(this.confettiAnimation);
         }
         const canvas = document.getElementById('confettiCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
     
     autoBuild() {
@@ -736,6 +840,7 @@ class NeuralForge {
         this.neuralNet.clear();
         this.selectedMachine = null;
         this.gameActive = true;
+        this.clearGameResult();
         this.centerCamera();
         localStorage.removeItem('neural_forge_save');
         this.updateUI();
