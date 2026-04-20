@@ -942,7 +942,7 @@ getTouchPosition(touch) {
 
 async initWavedash() {
     this.wavedashReady = false;
-    this.wavedashGameId = 'j97bf3ajc4z8ta5gffp6n3m971854f4h';
+    this.wavedashGameId = 'j971fvw4qbmrs7q4gnq0dddfmx857gh8';
     let attempts = 0;
     while (typeof WavedashJS === 'undefined' && attempts < 50) {
         await new Promise(r => setTimeout(r, 100));
