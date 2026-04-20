@@ -1030,3 +1030,35 @@ body {
         font-size: 0.85em;
     }
 }
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .machine-card {
+        padding: 15px;
+        min-width: 85px;
+    }
+    
+    .machine-icon {
+        font-size: 2em;
+    }
+    
+    .btn {
+        padding: 14px;
+        font-size: 1em;
+    }
+    
+    #gameCanvas {
+        touch-action: none; /* Prevents browser scroll on canvas */
+    }
+    
+    .machine-card:active {
+        transform: scale(0.95);
+        background: linear-gradient(135deg, #2a2a5e, #1a1a4e);
+    }
+}
+
+/* Visual feedback for touch taps */
+.machine-card, .btn {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}

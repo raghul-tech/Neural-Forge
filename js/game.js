@@ -60,7 +60,7 @@ class NeuralForge {
         this.addLog('⚙️ Welcome to Neural Forge! Click HELP to learn how to play', '#ffcc00');
         this.addLog('🎯 Goal: Reach 1000 score within 15 loops', '#00ffcc');
         this.addLog('🖱️ Drag anywhere on grid to move camera', '#888');
-        this.initWavedash();
+       // this.initWavedash();
     }
     
     checkSavedGameResult() {
@@ -173,84 +173,145 @@ class NeuralForge {
         this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y));
     }
     
-    setupEvents() {
-        this.canvas.addEventListener('mousedown', (e) => {
-            //if (!this.gameActive) return;
-            this.isPanning = true;
-            this.panStart = { x: e.clientX, y: e.clientY };
-            this.cameraStart = { x: this.camera.x, y: this.camera.y };
-            this.canvas.style.cursor = 'grabbing';
-        });
-        
-        window.addEventListener('mousemove', (e) => {
-            //if (this.isPanning && this.gameActive) {
-            if(this.isPanning){
-                const dx = e.clientX - this.panStart.x;
-                const dy = e.clientY - this.panStart.y;
-                this.camera.x = this.cameraStart.x - dx;
-                this.camera.y = this.cameraStart.y - dy;
-                this.clampCamera();
-                this.draw();
-            }
-        });
-        
-        window.addEventListener('mouseup', () => {
-            this.isPanning = false;
-            this.canvas.style.cursor = 'grab';
-        });
-        
-        this.canvas.addEventListener('click', (e) => {
-            if (!this.gameActive) return;
-            if (this.isPanning) return;
-            const pos = this.getGridPosition(e);
-            if (pos) this.placeMachine(pos.x, pos.y);
-        });
-        
-        this.canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            if (!this.gameActive) return;
-            if (this.isPanning) return;
-            const pos = this.getGridPosition(e);
-            if (pos) this.removeMachine(pos.x, pos.y);
-        });
-        
-        this.canvas.style.cursor = 'grab';
-        
-        document.querySelectorAll('.machine-card').forEach(card => {
-            card.addEventListener('click', () => {
-                this.checkSavedGameResult();
-                if (!this.gameActive) return;
-                const type = card.dataset.type;
-                this.selectMachine(type, card);
-            });
-        });
-        
-        document.getElementById('evolveBtn').addEventListener('click', () => {
-            this.checkSavedGameResult();
-            if (!this.gameActive) return;
-            this.evolveLoop();
-        });
-        
-        document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
-        
-        document.getElementById('autoBtn').addEventListener('click', () => {
-            this.checkSavedGameResult();
-            if (!this.gameActive) return;
-            this.autoBuild();
-        });
-        
-        const helpModal = document.getElementById('helpModal');
-        const helpBtn = document.getElementById('helpBtn');
-        const closeSpan = document.querySelector('.close');
-        
-        helpBtn.onclick = () => helpModal.style.display = 'block';
-        closeSpan.onclick = () => helpModal.style.display = 'none';
-        window.onclick = (event) => {
-            if (event.target == helpModal) helpModal.style.display = 'none';
-        };
-    }
+setupEvents() {
+    this.canvas.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        this.isPanning = true;
+        this.panStart = { x: e.clientX, y: e.clientY };
+        this.cameraStart = { x: this.camera.x, y: this.camera.y };
+        this.canvas.style.cursor = 'grabbing';
+    });
     
-    getGridPosition(event) {
+    window.addEventListener('mousemove', (e) => {
+        if (this.isPanning) {
+            const dx = e.clientX - this.panStart.x;
+            const dy = e.clientY - this.panStart.y;
+            this.camera.x = this.cameraStart.x - dx;
+            this.camera.y = this.cameraStart.y - dy;
+            this.clampCamera();
+            this.draw();
+        }
+    });
+    
+    window.addEventListener('mouseup', () => {
+        this.isPanning = false;
+        this.canvas.style.cursor = 'grab';
+    });
+
+    this.canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        this.touchTimeout = setTimeout(() => {
+            const pos = this.getTouchPosition(touch);
+            if (pos && this.gameActive) {
+                this.removeMachine(pos.x, pos.y);
+            }
+            this.isLongPress = true;
+        }, 500);
+        this.isPanning = true;
+        this.panStart = { x: touch.clientX, y: touch.clientY };
+        this.cameraStart = { x: this.camera.x, y: this.camera.y };
+        this.canvas.style.cursor = 'grabbing';
+    });
+    
+    this.canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (this.isPanning) {
+            const touch = e.touches[0];
+            const dx = touch.clientX - this.panStart.x;
+            const dy = touch.clientY - this.panStart.y;
+            this.camera.x = this.cameraStart.x - dx;
+            this.camera.y = this.cameraStart.y - dy;
+            this.clampCamera();
+            this.draw();
+        }
+    });
+    
+    this.canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        
+        if (this.touchTimeout) {
+            clearTimeout(this.touchTimeout);
+        }
+        
+        if (!this.isLongPress && this.gameActive && !this.isPanning) {
+            const touch = e.changedTouches[0];
+            const pos = this.getTouchPosition(touch);
+            if (pos && this.selectedMachine) {
+                this.placeMachine(pos.x, pos.y);
+            } else if (pos && !this.selectedMachine) {
+                this.addLog('⚠️ Select a machine first! Tap on any machine below', '#ffcc00');
+            }
+        }
+        
+        this.isPanning = false;
+        this.isLongPress = false;
+        this.canvas.style.cursor = 'grab';
+    });
+
+    this.canvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (!this.gameActive) return;
+        if (this.isPanning) return;
+        const pos = this.getGridPosition(e);
+        if (pos) this.removeMachine(pos.x, pos.y);
+    });
+    
+    this.canvas.style.cursor = 'grab';
+    
+    document.querySelectorAll('.machine-card').forEach(card => {
+        card.addEventListener('click', () => {
+            this.checkSavedGameResult();
+            if (!this.gameActive) return;
+            const type = card.dataset.type;
+            this.selectMachine(type, card);
+        });
+        
+        card.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.checkSavedGameResult();
+            if (!this.gameActive) return;
+            const type = card.dataset.type;
+            this.selectMachine(type, card);
+        });
+    });
+    
+    document.getElementById('evolveBtn').addEventListener('click', () => {
+        this.checkSavedGameResult();
+        if (!this.gameActive) return;
+        this.evolveLoop();
+    });
+    
+    document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
+    
+    document.getElementById('autoBtn').addEventListener('click', () => {
+        this.checkSavedGameResult();
+        if (!this.gameActive) return;
+        this.autoBuild();
+    });
+    
+    const buttons = ['evolveBtn', 'resetBtn', 'autoBtn', 'helpBtn'];
+    buttons.forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                btn.click();
+            });
+        }
+    });
+    
+    const helpModal = document.getElementById('helpModal');
+    const helpBtn = document.getElementById('helpBtn');
+    const closeSpan = document.querySelector('.close');
+    
+    helpBtn.onclick = () => helpModal.style.display = 'block';
+    closeSpan.onclick = () => helpModal.style.display = 'none';
+    window.onclick = (event) => {
+        if (event.target == helpModal) helpModal.style.display = 'none';
+    };
+}
+getGridPosition(event) {
         const rect = this.canvas.getBoundingClientRect();
         const scaleX = this.canvas.width / rect.width;
         const scaleY = this.canvas.height / rect.height;
@@ -269,6 +330,26 @@ class NeuralForge {
         }
         return null;
     }
+
+getTouchPosition(touch) {
+    const rect = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
+    
+    const touchCanvasX = (touch.clientX - rect.left) * scaleX;
+    const touchCanvasY = (touch.clientY - rect.top) * scaleY;
+    
+    const worldX = touchCanvasX + this.camera.x;
+    const worldY = touchCanvasY + this.camera.y;
+    
+    const gridX = Math.floor(worldX / this.cellSize);
+    const gridY = Math.floor(worldY / this.cellSize);
+    
+    if (gridX >= 0 && gridX < this.worldWidth && gridY >= 0 && gridY < this.worldHeight) {
+        return { x: gridX, y: gridY };
+    }
+    return null;
+}
     
     selectMachine(type, cardElement) {
         this.selectedMachine = type;
@@ -352,7 +433,7 @@ class NeuralForge {
         }
     }
     
-    evolveLoop() {
+    async evolveLoop() {
         if (this.currentLoop > this.maxLoops) {
             this.addLog('📢 Game complete! Press RESET to play again', '#ffcc00');
             this.gameActive = false;
@@ -386,17 +467,19 @@ class NeuralForge {
         this.draw();
         if (typeof soundManager !== 'undefined') soundManager.playLoopSound();
         
-        if (this.score >= this.targetScore) {
-            this.winGame();
-        } else if (this.currentLoop > this.maxLoops) {
-            this.endGame();
-        }
-        this.submitScoreToWavedash(this.score);
-    this.updateWavedashProgress();
+        await this.submitScoreToWavedash(this.score);
+    await this.updateWavedashProgress();
+    
+    // Check win/loss conditions AFTER submitting score
+    if (this.score >= this.targetScore) {
+        await this.winGame();
+    } else if (this.currentLoop > this.maxLoops) {
+        await this.endGame();
+    }
         this.saveGame();
     }
     
-    winGame() {
+    async winGame() {
         this.gameActive = false;
         
         const winData = {
@@ -422,11 +505,11 @@ class NeuralForge {
         }
         
         this.addLog(`🏆 VICTORY! You reached ${this.score} / ${this.targetScore} score! 🏆`, '#ffcc00');
-        this.submitWinToWavedash();
+        await this.submitWinToWavedash();
         this.saveGame();
     }
     
-    endGame() {
+    async endGame() {
         this.gameActive = false;
         const shortBy = this.targetScore - this.score;
         
@@ -451,7 +534,7 @@ class NeuralForge {
         }
         
         this.addLog(`📢 Game Complete! Final Score: ${this.score} / ${this.targetScore}`, '#ffcc00');
-        this.submitLoseToWavedash();
+        await this.submitLoseToWavedash();
         this.saveGame();
     }
     
@@ -857,68 +940,97 @@ class NeuralForge {
         requestAnimationFrame(() => this.animate());
     }
 
-initWavedash() {
+async initWavedash() {
     this.wavedashReady = false;
     this.wavedashGameId = 'j97bf3ajc4z8ta5gffp6n3m971854f4h';
-    if (typeof Wavedash !== 'undefined') {
-        Wavedash.init({
-            gameId: this.wavedashGameId,
-            onReady: () => {
-                console.log('🎮 Wavedash ready!');
+    let attempts = 0;
+    while (typeof WavedashJS === 'undefined' && attempts < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+    }
+    if (typeof WavedashJS !== 'undefined') {
+        try {
+            const response = await WavedashJS.init({
+                gameId: this.wavedashGameId,
+                debug: true 
+            });
+            if (response && response.success) {
+                console.log('🎮 Wavedash ready!', response);
                 this.wavedashReady = true;
                 this.submitScoreToWavedash(this.score);
-            },
-            onError: (error) => {
-                console.log('Wavedash error:', error);
+            } else {
+                console.log('Wavedash init response:', response);
             }
-        });
+        } catch (error) {
+            console.log('Wavedash init error:', error);
+        }
     } else {
-        console.log('Wavedash SDK not loaded');
+        console.log('WavedashJS SDK not loaded - running locally');
     }
 }
 
-submitScoreToWavedash(score) {
-    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
-        const intScore = Math.floor(score);
-        Wavedash.submitScore(intScore);
-        console.log(`📊 Score submitted to Wavedash: ${intScore}`);
+async submitScoreToWavedash(score) {
+    if (this.wavedashReady && typeof WavedashJS !== 'undefined') {
+        try {
+            const intScore = Math.floor(score);
+            const response = await WavedashJS.submitScore(intScore);
+            if (response && response.success) {
+                console.log(`📊 Score submitted to Wavedash: ${intScore}`);
+            }
+        } catch (error) {
+            console.log('Score submit error:', error);
+        }
     }
 }
 
-submitWinToWavedash() {
-    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
-        Wavedash.trackEvent('game_win', {
-            score: Math.floor(this.score),
-            loopsUsed: this.currentLoop - 1,
-            intelligence: Math.floor(this.intelligence),
-            machinesBuilt: this.machines.length
-        });
-        console.log('🏆 Win event tracked in Wavedash');
+async submitWinToWavedash() {
+    if (this.wavedashReady && typeof WavedashJS !== 'undefined') {
+        try {
+            const response = await WavedashJS.trackEvent('game_win', {
+                score: Math.floor(this.score),
+                loopsUsed: this.currentLoop - 1,
+                intelligence: Math.floor(this.intelligence),
+                machinesBuilt: this.machines.length
+            });
+            console.log('🏆 Win event tracked', response);
+        } catch (error) {
+            console.log('Win event error:', error);
+        }
     }
 }
 
-submitLoseToWavedash() {
-    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
-        Wavedash.trackEvent('game_lose', {
-            score: Math.floor(this.score),
-            shortBy: this.targetScore - this.score,
-            intelligence: Math.floor(this.intelligence),
-            machinesBuilt: this.machines.length
-        });
-        console.log('💔 Loss event tracked in Wavedash');
+async submitLoseToWavedash() {
+    if (this.wavedashReady && typeof WavedashJS !== 'undefined') {
+        try {
+            const response = await WavedashJS.trackEvent('game_lose', {
+                score: Math.floor(this.score),
+                shortBy: this.targetScore - this.score,
+                intelligence: Math.floor(this.intelligence),
+                machinesBuilt: this.machines.length
+            });
+            console.log('💔 Loss event tracked', response);
+        } catch (error) {
+            console.log('Loss event error:', error);
+        }
     }
 }
 
-updateWavedashProgress() {
-    if (this.wavedashReady && typeof Wavedash !== 'undefined') {
-        Wavedash.trackEvent('loop_complete', {
-            loop: this.currentLoop,
-            score: Math.floor(this.score),
-            resources: Math.floor(this.resources),
-            intelligence: Math.floor(this.intelligence)
-        });
+async updateWavedashProgress() {
+    if (this.wavedashReady && typeof WavedashJS !== 'undefined') {
+        try {
+            const response = await WavedashJS.trackEvent('loop_complete', {
+                loop: this.currentLoop,
+                score: Math.floor(this.score),
+                resources: Math.floor(this.resources),
+                intelligence: Math.floor(this.intelligence)
+            });
+            console.log(`🔄 Loop ${this.currentLoop} tracked`, response);
+        } catch (error) {
+            console.log('Progress event error:', error);
+        }
     }
 }
 }
 
 const game = new NeuralForge();
+game.initWavedash()

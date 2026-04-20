@@ -320,7 +320,14 @@
 
 <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
-    <script src="https://cdn.wavedash.io/sdk/v1/wavedash.js"></script>
+   <script>
+    // This will be overridden by Wavedash platform when deployed
+    window.WavedashJS = window.WavedashJS || {
+        init: () => Promise.resolve({ success: true, message: 'Mock mode' }),
+        submitScore: () => Promise.resolve({ success: true }),
+        trackEvent: () => Promise.resolve({ success: true })
+    };
+</script>
     <script src="js/neural-net.js"></script>
    <script src="js/game.js"></script>
    <script src="js/sounds.js"></script>
