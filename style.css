@@ -258,10 +258,26 @@ body {
     margin-top: 5px;
 }
 
-/* MIDDLE PANEL - GAME */
+/* Add to your style.css - Replace the game-panel and canvas-wrapper sections */
+
 .game-panel {
     flex: 1;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+    min-height: 0;
+}
+
+.canvas-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 520px;
+    background: #0a0a1a;
+    border-radius: 12px;
 }
 
 #gameCanvas {
@@ -270,8 +286,7 @@ body {
     border-radius: 12px;
     cursor: crosshair;
     box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
-    width: 100%;
-    height: auto;
+    display: block;
 }
 
 .selected-indicator {
@@ -1061,4 +1076,378 @@ body {
 .machine-card, .btn {
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+}
+
+/* ========== WAVEDASH IFRAME FIXES ========== */
+
+/* Detect Wavedash environment */
+@media (max-width: 1000px) {
+    .main-layout {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    /* Move stats to top in a horizontal row */
+    .left-panel {
+        width: 100%;
+        order: 1;
+    }
+    
+    .stats-panel {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px;
+    }
+    
+    /* Make stat cards more compact */
+    .stat-card {
+        flex: 1 1 auto;
+        min-width: 70px;
+        max-width: none;
+        margin-bottom: 0;
+        padding: 5px 8px;
+        gap: 6px;
+    }
+    
+    /* Score and resource cards wider */
+    .score-card, .resource-card {
+        flex: 2 1 auto;
+        min-width: 100px;
+    }
+    
+    /* Hide secondary text, keep only numbers */
+    .stat-max {
+        display: none;
+    }
+    
+    /* Smaller icons */
+    .stat-icon {
+        font-size: 18px;
+        width: 25px;
+    }
+    
+    .score-card .stat-icon, 
+    .resource-card .stat-icon {
+        font-size: 20px;
+    }
+    
+    /* Smaller text with truncation */
+    .stat-label {
+        font-size: 0.6em;
+        letter-spacing: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .stat-value {
+        font-size: 1.1em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .score-card .stat-value {
+        font-size: 1.3em;
+    }
+    
+    .resource-card .stat-value {
+        font-size: 1.3em;
+    }
+    
+    .loop-card .stat-value {
+        font-size: 1.1em;
+    }
+    
+    .normal-card .stat-value {
+        font-size: 1em;
+    }
+    
+    /* Progress bar - hide text, keep bar */
+    .progress-container {
+        display: none;
+    }
+    
+    /* Game panel becomes main focus */
+    .game-panel {
+        order: 2;
+        width: 100%;
+        min-height: 350px;
+    }
+    
+    .canvas-wrapper {
+        min-height: 350px;
+    }
+    
+    /* Controls move to bottom as horizontal bar */
+    .right-panel {
+        width: 100%;
+        order: 3;
+    }
+    
+    .controls-panel {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px;
+    }
+    
+    .btn {
+        flex: 1;
+        min-width: 70px;
+        padding: 8px 5px;
+        font-size: 0.7em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .tips-panel {
+        display: none;
+    }
+    
+    /* Library section stays at bottom */
+    .library-section {
+        order: 4;
+        padding: 0 10px 10px 10px;
+    }
+    
+    .machines {
+        gap: 6px;
+    }
+    
+    .machine-card {
+        min-width: 60px;
+        padding: 6px;
+    }
+    
+    .machine-icon {
+        font-size: 1.2em;
+    }
+    
+    .machine-name {
+        font-size: 0.6em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .machine-cost {
+        font-size: 0.55em;
+    }
+    
+    .machine-desc {
+        display: none;
+    }
+    
+    /* Log section */
+    .log-section {
+        order: 5;
+        padding: 0 10px 10px 10px;
+    }
+    
+    .log-container {
+        height: 70px;
+        font-size: 0.65em;
+    }
+    
+    .log-entry {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Even smaller Wavedash player */
+@media (max-width: 700px) {
+    .stats-panel {
+        flex-wrap: wrap;
+    }
+    
+    .stat-card {
+        min-width: 60px;
+        padding: 4px 6px;
+    }
+    
+    .score-card, .resource-card {
+        min-width: 85px;
+    }
+    
+    .stat-icon {
+        font-size: 16px;
+        width: 22px;
+    }
+    
+    .stat-label {
+        font-size: 0.55em;
+    }
+    
+    .stat-value {
+        font-size: 1em;
+    }
+    
+    .score-card .stat-value,
+    .resource-card .stat-value {
+        font-size: 1.1em;
+    }
+    
+    .controls-panel {
+        gap: 5px;
+    }
+    
+    .btn {
+        min-width: 55px;
+        padding: 6px 3px;
+        font-size: 0.65em;
+    }
+    
+    .machine-card {
+        min-width: 50px;
+        padding: 4px;
+    }
+    
+    .machine-icon {
+        font-size: 1em;
+    }
+    
+    .machine-name {
+        font-size: 0.55em;
+    }
+    
+    .canvas-wrapper {
+        min-height: 280px;
+    }
+}
+
+/* Very small height */
+@media (max-height: 600px) {
+    .header {
+        padding: 5px;
+    }
+    
+    .header h1 {
+        font-size: 1em;
+    }
+    
+    .subtitle {
+        display: none;
+    }
+    
+    .stats-panel {
+        gap: 4px;
+        padding: 5px;
+    }
+    
+    .stat-card {
+        padding: 3px 5px;
+        min-width: 50px;
+    }
+    
+    .stat-icon {
+        font-size: 14px;
+        width: 20px;
+    }
+    
+    .stat-value {
+        font-size: 0.9em;
+    }
+    
+    .score-card .stat-value,
+    .resource-card .stat-value {
+        font-size: 1em;
+    }
+    
+    .stat-label {
+        font-size: 0.5em;
+    }
+    
+    .game-panel {
+        min-height: 250px;
+    }
+    
+    .canvas-wrapper {
+        min-height: 250px;
+    }
+    
+    .controls-panel {
+        padding: 5px;
+    }
+    
+    .btn {
+        padding: 5px 3px;
+        font-size: 0.6em;
+        min-width: 50px;
+    }
+    
+    .machine-card {
+        padding: 3px;
+        min-width: 40px;
+    }
+    
+    .machine-icon {
+        font-size: 0.9em;
+    }
+    
+    .machine-name {
+        font-size: 0.45em;
+    }
+    
+    .machine-cost {
+        font-size: 0.45em;
+    }
+    
+    .log-container {
+        height: 45px;
+    }
+    
+    .log-entry {
+        font-size: 0.55em;
+    }
+}
+
+/* Extra small width - collapse further */
+@media (max-width: 480px) {
+    .stats-panel {
+        gap: 3px;
+    }
+    
+    .stat-card {
+        min-width: 45px;
+        padding: 3px 4px;
+    }
+    
+    .stat-icon {
+        font-size: 12px;
+        width: 18px;
+    }
+    
+    .stat-value {
+        font-size: 0.8em;
+    }
+    
+    .stat-label {
+        font-size: 0.45em;
+    }
+    
+    .score-card .stat-value,
+    .resource-card .stat-value {
+        font-size: 0.9em;
+    }
+    
+    .btn {
+        min-width: 40px;
+        padding: 4px 2px;
+        font-size: 0.55em;
+    }
+    
+    .machine-card {
+        min-width: 40px;
+        padding: 3px;
+    }
 }

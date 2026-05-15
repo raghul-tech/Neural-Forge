@@ -2,6 +2,8 @@ class NeuralForge {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
+        window.addEventListener('resize', () => this.resizeCanvas());
+        setTimeout(() => this.resizeCanvas(), 100); 
         
         this.currentLoop = 1;
         this.maxLoops = 14;
@@ -1050,6 +1052,41 @@ if (this.machines.length > 0) {
         this.draw();
         requestAnimationFrame(() => this.animate());
     }
+
+ resizeCanvas() {
+    const wrapper = document.querySelector('.canvas-wrapper');
+    if (!wrapper) return;
+    
+    // Get available space from wrapper
+    const maxWidth = wrapper.clientWidth - 20;
+    const maxHeight = wrapper.clientHeight - 20;
+    
+    const gameWidth = 700;
+    const gameHeight = 500;
+    
+    // Calculate scale to fit inside wrapper
+    const scaleX = maxWidth / gameWidth;
+    const scaleY = maxHeight / gameHeight;
+    const scale = Math.min(scaleX, scaleY, 1);
+    
+    // Set actual canvas resolution (sharp)
+    this.canvas.width = gameWidth;
+    this.canvas.height = gameHeight;
+    
+    // Set display size
+    this.canvas.style.width = `${gameWidth * scale}px`;
+    this.canvas.style.height = `${gameHeight * scale}px`;
+    
+    // Remove any conflicting styles
+    this.canvas.style.position = 'relative';
+    this.canvas.style.top = 'auto';
+    this.canvas.style.left = 'auto';
+    this.canvas.style.transform = 'none';
+    this.canvas.style.margin = '0 auto';
+    
+    // Force redraw
+    this.draw();
+}
 
 async initWavedash() {
     this.wavedashReady = false;
